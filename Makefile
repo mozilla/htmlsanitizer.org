@@ -1,7 +1,7 @@
 start:
 	@heroku ps:scale web=1
 
-update:
+deploy:
 	git push heroku master
 
 local:
