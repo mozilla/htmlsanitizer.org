@@ -1,10 +1,11 @@
 import os
-from flask import Flask
+import bleach
+from flask import Flask, render_template, jsonify
 app = Flask(__name__)
 
-@app.route("/")
-def hello():
-    return "lolwut"
+@app.route('/')
+def index():
+    return render_template('index.html')
 
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))
