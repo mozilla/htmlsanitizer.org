@@ -57,7 +57,7 @@ def sanitize(options, content_type):
     if not options_are_valid(options):
         return "Some options have an invalid type. Make sure you're sending strings, lists, dicts and bools in the appropriate places", 400
     try:
-        bleach.clean(**options)
+        return bleach.clean(**options)
     except:
         return "Something went wrong passing options to bleach. Please check your input and try again", 400
 
@@ -73,6 +73,7 @@ def options_are_valid(options):
     for (option, correct_type) in VALID_OPTIONS.items():
         if not VALID_OPTIONS.get(option) == correct_type:
             return False
+    
     attr = options.get('attributes')
     tags = options.get('tags')
     styles = options.get('styles')
@@ -80,6 +81,7 @@ def options_are_valid(options):
        (tags and not tags_are_valid) or \
        (styles and not styles_are_valid(styles)):
         return False
+    
     return True
    
 def attributes_are_valid(attributes):
