@@ -8,6 +8,8 @@
         height: 700px;
       }
     </style>
+    <script src="static/codemirror/lib/codemirror.js"></script>
+    <script src="static/codemirror/mode/javascript/javascript.js"></script>
   </head>
   <body>
     Make a POST request to this URL. Here are the defaults:
@@ -36,8 +38,6 @@
   "strip": false,
   "strip_comments": true  
 }</script>  
-  <script src="static/codemirror/lib/codemirror.js"></script>
-  <script src="static/codemirror/mode/javascript/javascript.js"></script>
   <script>
     var area = document.getElementById("example");
     var myCodeMirror = CodeMirror(document.body, {
@@ -45,6 +45,5 @@
       mode: {name: "javascript", json: true }
     });
   </script>
-
 </body>
 </html>
