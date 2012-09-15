@@ -5,7 +5,7 @@ deploy:
 	git push heroku master
 
 local:
-	@foreman start
+	@DEBUG=true python app.py
 
 reqs:
 	@pip install -r requirements.txt
