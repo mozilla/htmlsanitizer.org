@@ -4,7 +4,6 @@ import json
 from flask import Flask, render_template, jsonify, request
 
 app = Flask(__name__)
-app.debug = True
 
 VALID_OPTIONS = [
     'text',
@@ -42,7 +41,7 @@ def handle_json(request):
     body = request.data
     try:
         options = json.loads(body)
-    except ValueError:
+    except ValueError, e:
         return "Could not parse request. Make sure your JSON is valid", 400
     return sanitize(options, 'json')
 
@@ -67,4 +66,6 @@ def remove_invalid_options(options):
 
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))
+    if (os.environ.get("DEBUG")):
+        app.debug = True
     app.run(host='0.0.0.0', port=port)
