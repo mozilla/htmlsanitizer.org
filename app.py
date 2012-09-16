@@ -1,9 +1,7 @@
 import os
 import bleach
 import json
-from flask import Flask, render_template, jsonify, request
-
-app = Flask(__name__)
+from flask import Flask, render_template, jsonify, request, make_response
 
 VALID_OPTIONS = {
     'text': str,
@@ -13,6 +11,33 @@ VALID_OPTIONS = {
     'strip': bool,
     'strip_comments': bool,
 }
+
+DEFAULT_HEADERS = {
+    'Access-Control-Allow-Origin': '*',
+    'Access-Control-Allow-Credentials': 'true'
+}
+
+BAD_CONTENT_TYPE = "Content-Type must be either application/json or application/x-www-form-urlencoded"
+BAD_JSON = "Could not parse request. Make sure your JSON is valid"
+BAD_FORM = "Could not read form data."
+MISSING_REQUIRED_TEXT = "Didn't find any text to bleach. Make sure you pass a value for `text` in your JSON object"
+INVALID_OPTION_TYPES = "Some options have an invalid type. Make sure you're sending strings, lists, dicts and bools in the appropriate places"
+BLEACH_ERROR = "Something went wrong passing options to bleach. Please check your input and try again"
+
+app = Flask(__name__)
+
+def respond(data, headers={}, status=200):
+    response = make_response(data);
+    for (key, value) in DEFAULT_HEADERS.items():
+        response.headers[key] = value
+    for (key, value) in headers.items():
+        response.headers[key] = value
+    response.status_code = status
+    return response
+
+
+def respond_with_error(msg, status=400):
+    return respond(msg, status)
 
 @app.route('/', methods=['GET', 'POST'])
 def index():
@@ -34,7 +59,7 @@ def parse_request(request):
     }
     handler = methods.get(content_type);
     if not handler:
-        return "Content-Type must be either application/json or application/x-www-form-urlencoded", 406
+        return respond_with_error(BAD_CONTENT_TYPE, status=406)
     return handler(request)
 
 def handle_json(request):
@@ -42,24 +67,24 @@ def handle_json(request):
     try:
         options = json.loads(body)
     except ValueError, e:
-        return "Could not parse request. Make sure your JSON is valid", 400
+        return respond_with_error(BAD_JSON)
     return sanitize(options, 'json')
 
 def handle_form(request):
     if not request.form:
-        return "Could not read form data.", 400
+        return respond_with_error(BAD_FORM)
     return sanitize(request.form, 'form')
 
 def sanitize(options, content_type):
     if not options.get('text'):
-        return "Didn't find any text to bleach. Make sure you pass a value for `text` in your JSON object", 400
+        return respond_with_error(MISSING_REQUIRED_TEXT)
     options = remove_invalid_options(options)
     if not options_are_valid(options):
-        return "Some options have an invalid type. Make sure you're sending strings, lists, dicts and bools in the appropriate places", 400
+        return respond_with_error(INVALID_OPTION_TYPES)
     try:
-        return bleach.clean(**options)
+        return respond(bleach.clean(**options))
     except:
-        return "Something went wrong passing options to bleach. Please check your input and try again", 400
+        return respond_with_error(BLEACH_ERROR)
 
 def remove_invalid_options(options):
     valid_options = {}
@@ -73,7 +98,6 @@ def options_are_valid(options):
     for (option, correct_type) in VALID_OPTIONS.items():
         if not VALID_OPTIONS.get(option) == correct_type:
             return False
-    
     attr = options.get('attributes')
     tags = options.get('tags')
     styles = options.get('styles')
@@ -81,7 +105,6 @@ def options_are_valid(options):
        (tags and not tags_are_valid) or \
        (styles and not styles_are_valid(styles)):
         return False
-    
     return True
    
 def attributes_are_valid(attributes):
