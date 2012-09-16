@@ -65,7 +65,7 @@ def remove_invalid_options(options):
     valid_options = {}
     for opt in VALID_OPTIONS.keys(): 
         value = options.get(opt)
-        if value:
+        if value is not None:
             valid_options[opt] = value
     return valid_options
 
