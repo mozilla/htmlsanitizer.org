@@ -1,0 +1,3 @@
+[submodule "bleach"]
+	path = bleach
+	url = https://github.com/simonwex/bleach/commits/9d6230b00326616d772e31efe7f3db250db838b6
