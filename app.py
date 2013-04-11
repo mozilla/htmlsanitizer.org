@@ -10,6 +10,7 @@ VALID_OPTIONS = {
     'styles': list,
     'strip': bool,
     'strip_comments': bool,
+    'parse_as_fragment': bool
 }
 
 DEFAULT_HEADERS = {
