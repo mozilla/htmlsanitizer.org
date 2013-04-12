@@ -34,6 +34,7 @@ def respond(data, headers={}, status=200):
     for (key, value) in headers.items():
         response.headers[key] = value
     response.status_code = status
+    print "wooble: " + status
     return response
 
 
@@ -83,7 +84,8 @@ def sanitize(options, content_type):
     if not options_are_valid(options):
         return respond_with_error(INVALID_OPTION_TYPES)
     try:
-        return respond(bleach.clean(**options))
+        response = bleach.clean(**options)
+        return respond(response)
     except:
         return respond_with_error(BLEACH_ERROR)
 
