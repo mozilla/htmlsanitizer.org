@@ -34,7 +34,6 @@ def respond(data, headers={}, status=200):
     for (key, value) in headers.items():
         response.headers[key] = value
     response.status_code = status
-    print "wooble: " + status
     return response
 
 
