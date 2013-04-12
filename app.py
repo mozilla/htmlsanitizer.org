@@ -10,6 +10,7 @@ VALID_OPTIONS = {
     'styles': list,
     'strip': bool,
     'strip_comments': bool,
+    'parse_as_fragment': bool
 }
 
 DEFAULT_HEADERS = {
@@ -82,7 +83,8 @@ def sanitize(options, content_type):
     if not options_are_valid(options):
         return respond_with_error(INVALID_OPTION_TYPES)
     try:
-        return respond(bleach.clean(**options))
+        response = bleach.clean(**options)
+        return respond(response)
     except:
         return respond_with_error(BLEACH_ERROR)
 
