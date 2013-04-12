@@ -1,0 +1,51 @@
+<!doctype html>
+<html>
+  <head>
+    <title>htmlsanitizer.org</title>
+    <link rel="stylesheet" href="static/codemirror/lib/codemirror.css" type="text/css" media="screen">
+    <style>
+      .CodeMirror-scroll {
+        height: 700px;
+      }
+    </style>
+    <script src="static/codemirror/lib/codemirror.js"></script>
+    <script src="static/codemirror/mode/javascript/javascript.js"></script>
+  </head>
+  <body>
+    <a style="position: absolute; z-index: 100; top: 0; right: 0; border: 0;" href="https://github.com/brianloveswords/htmlsanitizer.org"><img style="border: 0" src="https://s3.amazonaws.com/github/ribbons/forkme_right_darkblue_121621.png" alt="Fork me on GitHub"></a>
+    
+    Make a POST request to this URL. Here are the defaults:
+  <script type="text/plain" id="example">{
+  "text": null,
+  "tags": [
+    "a",
+    "abbr",
+    "acronym",
+    "b",
+    "blockquote",
+    "code",
+    "em",
+    "i",
+    "li",
+    "ol",
+    "strong",
+    "ul",
+  ],
+  "attributes": {
+    "a": ["href", "title"],
+    "abbr": ["title"],
+    "acronym": ["title"],
+  },
+  "styles": [],
+  "strip": false,
+  "strip_comments": true  
+}</script>  
+  <script>
+    var area = document.getElementById("example");
+    var myCodeMirror = CodeMirror(document.body, {
+      value: area.innerHTML,
+      mode: {name: "javascript", json: true }
+    });
+  </script>
+</body>
+</html>
