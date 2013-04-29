@@ -1,6 +1,7 @@
 import os
 import bleach
 import json
+import html5lib
 from flask import Flask, render_template, jsonify, request, make_response
 
 VALID_OPTIONS = {
@@ -46,7 +47,7 @@ def index():
         return show_index()
     return handle_post()
 
-def show_index(): 
+def show_index():
    return render_template('index.html')
 
 def handle_post():
@@ -76,6 +77,26 @@ def handle_form(request):
         return respond_with_error(BAD_FORM)
     return sanitize(request.form, 'form')
 
+# Sanitize IE conditional comments, with code from
+# https://github.com/mozilla/webpagemaker/blob/development/webpagemaker/api/sanitize.py
+def _comment_sanitizing_stream(stream):
+    for item in stream:
+        if item['type'] == "Comment":
+            item['data'] = item['data'].replace('[', '{').replace(']', '}')
+        yield item
+
+# Sanitize IE conditional comments, with code from
+# https://github.com/mozilla/webpagemaker/blob/development/webpagemaker/api/sanitize.py
+def sanitize_comments(html):
+    treebuilder = html5lib.treebuilders.getTreeBuilder("dom")
+    parser = html5lib.HTMLParser(tree=treebuilder)
+    walker = html5lib.treewalkers.getTreeWalker("dom")
+    dom_tree = parser.parse(html)
+    stream = walker(dom_tree)
+    HTMLSerializer = html5lib.serializer.htmlserializer.HTMLSerializer
+    s = HTMLSerializer(omit_optional_tags=False, quote_attr_values=True)
+    return s.render(_comment_sanitizing_stream(stream))
+
 def sanitize(options, content_type):
     if not options.get('text'):
         return respond_with_error(MISSING_REQUIRED_TEXT)
@@ -84,13 +105,14 @@ def sanitize(options, content_type):
         return respond_with_error(INVALID_OPTION_TYPES)
     try:
         response = bleach.clean(**options)
+        response = sanitize_comments(response);
         return respond(response)
     except:
         return respond_with_error(BLEACH_ERROR)
 
 def remove_invalid_options(options):
     valid_options = {}
-    for opt in VALID_OPTIONS.keys(): 
+    for opt in VALID_OPTIONS.keys():
         value = options.get(opt)
         if value is not None:
             valid_options[opt] = value
@@ -108,7 +130,7 @@ def options_are_valid(options):
        (styles and not styles_are_valid(styles)):
         return False
     return True
-   
+
 def attributes_are_valid(attributes):
     for value in attributes.values():
         if type(value) != list:
