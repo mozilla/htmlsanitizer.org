@@ -126,8 +126,7 @@ def options_are_valid(options):
     tags = options.get('tags')
     styles = options.get('styles')
     if (attr and not attributes_are_valid(attr)) or \
-       (tags and not tags_are_valid) or \
-       (styles and not styles_are_valid(styles)):
+       (tags and not tags_are_valid):
         return False
     return True
 
