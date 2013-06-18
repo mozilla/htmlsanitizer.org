@@ -99,19 +99,19 @@ class BleachSanitizerMixin(HTMLSanitizerMixin):
         the whitelist.
 
         """
-        # disallow urls
-        style = re.compile('url\s*\(\s*[^\s)]+?\s*\)\s*').sub(' ', style)
 
         # gauntlet
-        if not re.match("""^([-:,;#%.\sa-zA-Z0-9!]|\w-\w|'[\s\w]+"""
-                        """'|"[\s\w]+"|\([\d,\s]+\))*$""",
-                        style):
-            return ''
-        if not re.match("^\s*([-\w]+\s*:[^:;]*(;\s*|$))*$", style):
+        #   if not re.match("""^([-:,;#%.\sa-zA-Z0-9!]|\w-\w|'[\s\w]+"""
+        #                   """'|"[\s\w]+"|\([\d,\s]+\))*$""",
+        #                   style):
+        #       return ''
+
+        # test for "prop:val;" format
+        if not re.match("^\s*([-\w]+\s*:[^;]*(;\s*|$))*$", style):
             return ''
 
         clean = []
-        for prop, value in re.findall('([-\w]+)\s*:\s*([^:;]*)', style):
+        for prop, value in re.findall('([-\w]+)\s*:\s*([^;]*)', style):
             if not value:
                 continue
             if prop.lower() in self.allowed_css_properties:
