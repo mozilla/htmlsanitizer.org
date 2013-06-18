@@ -112,7 +112,6 @@ class BleachSanitizerMixin(HTMLSanitizerMixin):
 
         clean = []
         for prop, value in re.findall('([-\w]+)\s*:\s*([^;]*)', style):
-#        for prop, value in re.findall('([-\w]+)\s*:\s*([^:;]*)', style):
             if not value:
                 continue
             if prop.lower() in self.allowed_css_properties:
