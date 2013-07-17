@@ -146,7 +146,7 @@ styles_are_valid = tags_are_valid
 
 
 if __name__ == "__main__":
-    port = int(os.environ.get("PORT", 5000))
+    port = int(os.environ.get("PORT", 5050))
     if (os.environ.get("DEBUG")):
         app.debug = True
     app.run(host='0.0.0.0', port=port)
